@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO" monitorInterval="86400">
+    <Properties>
+        <Property name="pattern_file">
+            %d{yyyy-MM-dd HH:mm:ss} [%t] %-5level %logger{5} - %msg%n
+        </Property>
+        <Property name="app_log_root">
+            c:/logs
+        </Property>
+    </Properties>
+    <Appenders>
+        <File name="TxtFile" fileName="${app_log_root}/log.txt" bufferedIO="true" append="false">
+            <PatternLayout pattern="${pattern_file}"/>
+        </File>
+    </Appenders>
+    <Loggers>
+        <Root level="INFO">
+            <AppenderRef ref="TxtFile" level="info"/>
+        </Root>
+    </Loggers>
+</Configuration>
