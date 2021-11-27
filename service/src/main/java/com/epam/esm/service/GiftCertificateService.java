@@ -34,7 +34,7 @@ public interface GiftCertificateService extends BaseService<GiftCertificate> {
      * @param tagName - target certificate identifier
      * @return list of {@link GiftCertificate} matching search condition
      */
-    List<GiftCertificate> findByTagName(String tagName);
+    List<GiftCertificate> findAllByTagName(String tagName);
 
     /**
      * Method for seeking {@link GiftCertificate}s by part of its name and description.
@@ -68,7 +68,7 @@ public interface GiftCertificateService extends BaseService<GiftCertificate> {
      * @return list of {@link GiftCertificate}
      * @throws {@link IllegalPageNumberException} when page number is invalid
      */
-    List<GiftCertificate> findCertificatesByTags(Integer page, Integer itemCount, String... tagNames)
+    List<GiftCertificate> findAllByTagNames(Integer page, Integer itemCount, String... tagNames)
             throws IllegalPageNumberException;
 
 }

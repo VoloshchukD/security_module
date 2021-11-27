@@ -3,6 +3,7 @@ package com.epam.esm.controller;
 import com.epam.esm.controller.util.assembler.OrderModelAssembler;
 import com.epam.esm.controller.util.assembler.UserModelAssembler;
 import com.epam.esm.entity.Order;
+import com.epam.esm.entity.Tag;
 import com.epam.esm.entity.User;
 import com.epam.esm.service.UserService;
 import com.epam.esm.service.exception.DataNotFoundException;
@@ -10,6 +11,7 @@ import com.epam.esm.service.exception.IllegalPageNumberException;
 import com.epam.esm.service.exception.ParameterNotPresentException;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,6 +31,13 @@ public class UserController {
         this.userService = userService;
         this.userModelAssembler = userModelAssembler;
         this.orderModelAssembler = orderModelAssembler;
+    }
+
+    @PostMapping
+    public ResponseEntity<Boolean> addUser(@RequestBody User user) {
+        boolean result = userService.add(user);
+        HttpStatus httpStatus = result ? HttpStatus.CREATED : HttpStatus.NOT_MODIFIED;
+        return new ResponseEntity<>(result, httpStatus);
     }
 
     @GetMapping(value = "/{id}")

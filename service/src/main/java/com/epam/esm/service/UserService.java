@@ -2,6 +2,7 @@ package com.epam.esm.service;
 
 import com.epam.esm.entity.Order;
 import com.epam.esm.entity.User;
+import com.epam.esm.service.exception.DataNotFoundException;
 import com.epam.esm.service.exception.IllegalPageNumberException;
 import com.epam.esm.service.exception.ParameterNotPresentException;
 

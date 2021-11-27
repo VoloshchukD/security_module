@@ -10,7 +10,16 @@ import com.epam.esm.service.exception.ParameterNotPresentException;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -26,6 +35,15 @@ public class GiftCertificateController {
                                      GiftCertificateModelAssembler certificateModelAssembler) {
         this.giftCertificateService = giftCertificateService;
         this.certificateModelAssembler = certificateModelAssembler;
+    }
+
+    @PostMapping(value = "/orders", params = {"certificate-id", "user-id"})
+    public ResponseEntity<Boolean> addCertificateToUser(@RequestParam("certificate-id") Long certificateId,
+                                                        @RequestParam("user-id") Long userId)
+            throws ParameterNotPresentException, DataNotFoundException {
+        boolean result = giftCertificateService.addCertificateToUser(certificateId, userId);
+        HttpStatus httpStatus = result ? HttpStatus.CREATED : HttpStatus.NOT_MODIFIED;
+        return new ResponseEntity<>(result, httpStatus);
     }
 
     @GetMapping("/{id}")
@@ -52,15 +70,6 @@ public class GiftCertificateController {
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @PostMapping(params = {"certificate-id", "user-id"})
-    public ResponseEntity<Boolean> addCertificateToUser(@RequestParam("certificate-id") Long certificateId,
-                                                        @RequestParam("user-id") Long userId)
-            throws ParameterNotPresentException, DataNotFoundException {
-        boolean result = giftCertificateService.addCertificateToUser(certificateId, userId);
-        HttpStatus httpStatus = result ? HttpStatus.CREATED : HttpStatus.NOT_MODIFIED;
-        return new ResponseEntity<>(result, httpStatus);
-    }
-
     @PatchMapping
     public ResponseEntity<GiftCertificate> updateGiftCertificate(@RequestBody GiftCertificate giftCertificate)
             throws ParameterNotPresentException, DataNotFoundException {
@@ -80,7 +89,7 @@ public class GiftCertificateController {
     @GetMapping(params = {"tag-name"})
     @ResponseStatus(HttpStatus.OK)
     public List<EntityModel<GiftCertificate>> findGiftCertificateByTagName(@RequestParam("tag-name") String tagName) {
-        return certificateModelAssembler.toCollectionModel(giftCertificateService.findByTagName(tagName));
+        return certificateModelAssembler.toCollectionModel(giftCertificateService.findAllByTagName(tagName));
     }
 
     @GetMapping(params = {"tag-names", "page", "item-count"})
@@ -91,7 +100,7 @@ public class GiftCertificateController {
             throws IllegalPageNumberException {
         String[] tagNamesArray = new String[tagNames.size()];
         List<GiftCertificate> certificates
-                = giftCertificateService.findCertificatesByTags(page, itemCount, tagNames.toArray(tagNamesArray));
+                = giftCertificateService.findAllByTagNames(page, itemCount, tagNames.toArray(tagNamesArray));
         return certificateModelAssembler.toCollectionModel(certificates);
     }
 

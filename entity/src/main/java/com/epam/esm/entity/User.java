@@ -18,6 +18,21 @@ public class User {
     @Column
     private String surname;
 
+    @Column
+    private String username;
+
+    @Column
+    private String password;
+
+    @Column
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
+    public enum Role {
+        USER,
+        ADMINISTRATOR
+    }
+
     public Long getId() {
         return id;
     }
@@ -42,18 +57,43 @@ public class User {
         this.surname = surname;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
         return Objects.equals(id, user.id) && Objects.equals(forename, user.forename)
-                && Objects.equals(surname, user.surname);
+                && Objects.equals(surname, user.surname) && Objects.equals(username, user.username)
+                && Objects.equals(password, user.password) && role == user.role;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, forename, surname);
+        return Objects.hash(id, forename, surname, username, password, role);
     }
 
     @Override
@@ -62,6 +102,9 @@ public class User {
                 "id=" + id +
                 ", forename='" + forename + '\'' +
                 ", surname='" + surname + '\'' +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", role=" + role +
                 '}';
     }
 
