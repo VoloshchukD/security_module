@@ -5,6 +5,7 @@ import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.dto.SortDataDto;
 import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.service.exception.DataNotFoundException;
+import com.epam.esm.service.exception.ForbiddenRequestException;
 import com.epam.esm.service.exception.IllegalPageNumberException;
 import com.epam.esm.service.exception.ParameterNotPresentException;
 import org.springframework.hateoas.EntityModel;
@@ -35,15 +36,6 @@ public class GiftCertificateController {
                                      GiftCertificateModelAssembler certificateModelAssembler) {
         this.giftCertificateService = giftCertificateService;
         this.certificateModelAssembler = certificateModelAssembler;
-    }
-
-    @PostMapping(value = "/orders", params = {"certificate-id", "user-id"})
-    public ResponseEntity<Boolean> addCertificateToUser(@RequestParam("certificate-id") Long certificateId,
-                                                        @RequestParam("user-id") Long userId)
-            throws ParameterNotPresentException, DataNotFoundException {
-        boolean result = giftCertificateService.addCertificateToUser(certificateId, userId);
-        HttpStatus httpStatus = result ? HttpStatus.CREATED : HttpStatus.NOT_MODIFIED;
-        return new ResponseEntity<>(result, httpStatus);
     }
 
     @GetMapping("/{id}")
@@ -88,7 +80,8 @@ public class GiftCertificateController {
 
     @GetMapping(params = {"tag-name"})
     @ResponseStatus(HttpStatus.OK)
-    public List<EntityModel<GiftCertificate>> findGiftCertificateByTagName(@RequestParam("tag-name") String tagName) {
+    public List<EntityModel<GiftCertificate>> findGiftCertificateByTagName(@RequestParam("tag-name") String tagName)
+            throws ForbiddenRequestException {
         return certificateModelAssembler.toCollectionModel(giftCertificateService.findAllByTagName(tagName));
     }
 
@@ -97,7 +90,7 @@ public class GiftCertificateController {
     public List<EntityModel<GiftCertificate>> findCertificatesByTags(@RequestParam("tag-names") List<String> tagNames,
                                                                      @RequestParam("page") Integer page,
                                                                      @RequestParam("item-count") Integer itemCount)
-            throws IllegalPageNumberException {
+            throws IllegalPageNumberException, ForbiddenRequestException {
         String[] tagNamesArray = new String[tagNames.size()];
         List<GiftCertificate> certificates
                 = giftCertificateService.findAllByTagNames(page, itemCount, tagNames.toArray(tagNamesArray));

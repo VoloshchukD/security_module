@@ -1,5 +1,6 @@
 package com.epam.esm.controller.jwt;
 
+import com.epam.esm.entity.dto.UserDetailsDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,12 +21,13 @@ import java.util.Date;
 public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
+
     private final JwtConfiguration jwtConfiguration;
+
     private final SecretKey secretKey;
 
     public JwtUsernameAndPasswordAuthenticationFilter(AuthenticationManager authenticationManager,
-                                                      JwtConfiguration jwtConfiguration,
-                                                      SecretKey secretKey) {
+                                                      JwtConfiguration jwtConfiguration, SecretKey secretKey) {
         this.authenticationManager = authenticationManager;
         this.jwtConfiguration = jwtConfiguration;
         this.secretKey = secretKey;
@@ -45,7 +47,6 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
 
             Authentication authenticate = authenticationManager.authenticate(authentication);
             return authenticate;
-
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -57,16 +58,20 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
                                             HttpServletResponse response,
                                             FilterChain chain,
                                             Authentication authResult) throws IOException, ServletException {
+        UserDetailsDto userDetailsDto = (UserDetailsDto) authResult.getPrincipal();
         String token = Jwts.builder()
+                .setId(userDetailsDto.getId().toString())
                 .setSubject(authResult.getName())
-                .claim("authorities", authResult.getAuthorities())
+                .claim(JwtTokenVerifier.AUTHORITIES, authResult.getAuthorities())
                 .setIssuedAt(new Date())
                 .setExpiration(
-                        java.sql.Date.valueOf(LocalDate.now().plusDays(jwtConfiguration.getTokenExpirationAfterDays())))
+                        java.sql.Date.valueOf(LocalDate.now().plusDays(
+                                jwtConfiguration.getTokenExpirationAfterDays())))
                 .signWith(secretKey)
                 .compact();
 
-        response.addHeader(jwtConfiguration.getAuthorizationHeader(), jwtConfiguration.getTokenPrefix() + token);
+        response.addHeader(jwtConfiguration.getAuthorizationHeader(),
+                jwtConfiguration.getTokenPrefix() + token);
     }
 
 }

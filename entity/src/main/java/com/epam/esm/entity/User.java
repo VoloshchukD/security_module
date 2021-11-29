@@ -1,6 +1,13 @@
 package com.epam.esm.entity;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.util.Objects;
 
 @Entity
@@ -29,8 +36,21 @@ public class User {
     private Role role;
 
     public enum Role {
+
         USER,
-        ADMINISTRATOR
+        ADMINISTRATOR;
+
+        public static final String ROLE_PREFIX = "ROLE_";
+
+        public String formatAsString() {
+            return ROLE_PREFIX + this.name();
+        }
+
+        public static Role parseString(String value) {
+            String enumAsString = value.replace(ROLE_PREFIX, "");
+            return valueOf(enumAsString);
+        }
+
     }
 
     public Long getId() {

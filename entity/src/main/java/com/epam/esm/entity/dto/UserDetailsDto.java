@@ -9,35 +9,46 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class ApplicationUser implements UserDetails {
+public class UserDetailsDto implements UserDetails {
+
+    private Long id;
 
     private String username;
 
     private String password;
 
-    private Collection<GrantedAuthority> authorities;
+    private User.Role role;
 
-    public ApplicationUser(User user) {
+    public UserDetailsDto(User user) {
+        this.id = user.getId();
         this.username = user.getUsername();
         this.password = user.getPassword();
-        this.authorities = Stream.of("ROLE_" + user.getRole().name())
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
+        this.role = user.getRole();
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorities;
+        return Stream.of(role.formatAsString())
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
     }
 
-    @Override
-    public String getPassword() {
-        return password;
+    public Long getId() {
+        return id;
+    }
+
+    public User.Role getRole() {
+        return role;
     }
 
     @Override
     public String getUsername() {
         return username;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
     }
 
     @Override

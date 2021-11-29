@@ -1,8 +1,6 @@
 package com.epam.esm.service.impl;
 
-import com.epam.esm.dao.OrderRepository;
 import com.epam.esm.dao.UserRepository;
-import com.epam.esm.entity.Order;
 import com.epam.esm.entity.User;
 import com.epam.esm.service.UserService;
 import com.epam.esm.service.exception.DataNotFoundException;
@@ -22,13 +20,10 @@ public class UserServiceImpl implements UserService {
 
     private UserRepository userRepository;
 
-    private OrderRepository orderRepository;
-
     private PasswordEncoder encoder;
 
-    public UserServiceImpl(UserRepository userRepository, OrderRepository orderRepository, PasswordEncoder encoder) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder encoder) {
         this.userRepository = userRepository;
-        this.orderRepository = orderRepository;
         this.encoder = encoder;
     }
 
@@ -80,30 +75,6 @@ public class UserServiceImpl implements UserService {
         User user = find(id);
         userRepository.delete(user);
         return true;
-    }
-
-    @Override
-    public Order findUserOrder(Long orderId, Long userId) throws ParameterNotPresentException {
-        if (orderId == null) {
-            throw new ParameterNotPresentException(ExceptionMessageHandler.ORDER_CODE,
-                    ExceptionMessageHandler.ORDER_ID_NOT_PRESENT_MESSAGE_NAME);
-        }
-        if (userId == null) {
-            throw new ParameterNotPresentException(ExceptionMessageHandler.USER_CODE,
-                    ExceptionMessageHandler.USER_ID_NOT_PRESENT_MESSAGE_NAME);
-        }
-        return orderRepository.findByIdAndUser_Id(orderId, userId);
-    }
-
-    @Override
-    public List<Order> findUserOrders(Long userId, Integer page, Integer itemCount)
-            throws ParameterNotPresentException, IllegalPageNumberException {
-        if (userId == null) {
-            throw new ParameterNotPresentException(ExceptionMessageHandler.USER_CODE,
-                    ExceptionMessageHandler.USER_ID_NOT_PRESENT_MESSAGE_NAME);
-        }
-        int convertedPageNumber = PaginationLogics.convertPage(page, itemCount);
-        return orderRepository.findAllByUser_Id(userId, PageRequest.of(convertedPageNumber, itemCount));
     }
 
 }

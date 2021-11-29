@@ -5,9 +5,12 @@ import com.epam.esm.dao.TagRepository;
 import com.epam.esm.entity.CertificateTagMap;
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Tag;
+import com.epam.esm.entity.User;
+import com.epam.esm.entity.dto.UserDetailsDto;
 import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.service.TagService;
 import com.epam.esm.service.exception.DataNotFoundException;
+import com.epam.esm.service.exception.ForbiddenRequestException;
 import com.epam.esm.service.exception.IllegalPageNumberException;
 import com.epam.esm.service.exception.ParameterNotPresentException;
 import com.epam.esm.service.util.ExceptionMessageHandler;
@@ -27,12 +30,16 @@ public class TagServiceImpl implements TagService {
 
     private GiftCertificateService certificateService;
 
+    private UserDetailsServiceImpl userDetailsService;
+
     public TagServiceImpl(TagRepository tagRepository,
                           CertificateTagMapRepository certificateTagMapRepository,
-                          GiftCertificateService certificateService) {
+                          GiftCertificateService certificateService,
+                          UserDetailsServiceImpl userDetailsService) {
         this.tagRepository = tagRepository;
         this.certificateTagMapRepository = certificateTagMapRepository;
         this.certificateService = certificateService;
+        this.userDetailsService = userDetailsService;
     }
 
     @Override
@@ -58,10 +65,15 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public Tag findPopularTag(Long userId) throws ParameterNotPresentException {
+    public Tag findPopularTag(Long userId) throws ParameterNotPresentException, ForbiddenRequestException {
         if (userId == null) {
             throw new ParameterNotPresentException(ExceptionMessageHandler.USER_CODE,
                     ExceptionMessageHandler.USER_ID_NOT_PRESENT_MESSAGE_NAME);
+        }
+        UserDetailsDto currentUser = userDetailsService.getAuthorizedUserDetails();
+        if (currentUser.getRole() == User.Role.USER && !currentUser.getId().equals(userId)) {
+            throw new ForbiddenRequestException(ExceptionMessageHandler.TAG_CODE,
+                    ExceptionMessageHandler.FORBIDDEN_REQUEST_MESSAGE_NAME);
         }
         return tagRepository.findPopularTag(userId, PageRequest.of(0, 1)).get(0);
     }

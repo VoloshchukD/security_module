@@ -1,14 +1,13 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.GiftCertificateRepository;
-import com.epam.esm.dao.OrderRepository;
 import com.epam.esm.entity.GiftCertificate;
-import com.epam.esm.entity.Order;
 import com.epam.esm.entity.User;
 import com.epam.esm.entity.dto.SortDataDto;
+import com.epam.esm.entity.dto.UserDetailsDto;
 import com.epam.esm.service.GiftCertificateService;
-import com.epam.esm.service.UserService;
 import com.epam.esm.service.exception.DataNotFoundException;
+import com.epam.esm.service.exception.ForbiddenRequestException;
 import com.epam.esm.service.exception.IllegalPageNumberException;
 import com.epam.esm.service.exception.ParameterNotPresentException;
 import com.epam.esm.service.util.ExceptionMessageHandler;
@@ -25,32 +24,17 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     private GiftCertificateRepository certificateRepository;
 
-    private OrderRepository orderRepository;
+    private UserDetailsServiceImpl userDetailsService;
 
-    private UserService userService;
-
-    public GiftCertificateServiceImpl(GiftCertificateRepository certificateRepository, OrderRepository orderRepository,
-                                      UserService userService) {
+    public GiftCertificateServiceImpl(GiftCertificateRepository certificateRepository,
+                                      UserDetailsServiceImpl userDetailsService) {
         this.certificateRepository = certificateRepository;
-        this.orderRepository = orderRepository;
-        this.userService = userService;
+        this.userDetailsService = userDetailsService;
     }
 
     @Override
     public boolean add(GiftCertificate certificate) {
         return certificateRepository.save(certificate) != null;
-    }
-
-    @Override
-    public boolean addCertificateToUser(Long certificateId, Long userId)
-            throws ParameterNotPresentException, DataNotFoundException {
-        GiftCertificate certificate = find(certificateId);
-        User user = userService.find(userId);
-        Order order = new Order();
-        order.setCertificate(certificate);
-        order.setUser(user);
-        order.setTotalCost(certificate.getPrice());
-        return orderRepository.save(order) != null;
     }
 
     @Override
@@ -101,13 +85,23 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public List<GiftCertificate> findAllByTagName(String tagName) {
+    public List<GiftCertificate> findAllByTagName(String tagName) throws ForbiddenRequestException {
+        UserDetailsDto currentUser = userDetailsService.getAuthorizedUserDetails();
+        if (currentUser.getRole() != User.Role.ADMINISTRATOR) {
+            throw new ForbiddenRequestException(ExceptionMessageHandler.CERTIFICATE_CODE,
+                    ExceptionMessageHandler.FORBIDDEN_REQUEST_MESSAGE_NAME);
+        }
         return certificateRepository.findAllByTagName(tagName);
     }
 
     @Override
     public List<GiftCertificate> findAllByTagNames(Integer page, Integer itemCount, String... tagNames)
-            throws IllegalPageNumberException {
+            throws IllegalPageNumberException, ForbiddenRequestException {
+        UserDetailsDto currentUser = userDetailsService.getAuthorizedUserDetails();
+        if (currentUser.getRole() != User.Role.ADMINISTRATOR) {
+            throw new ForbiddenRequestException(ExceptionMessageHandler.CERTIFICATE_CODE,
+                    ExceptionMessageHandler.FORBIDDEN_REQUEST_MESSAGE_NAME);
+        }
         int convertedPageNumber = PaginationLogics.convertPage(page, itemCount);
         return certificateRepository.findAllByTagNames(PageRequest.of(convertedPageNumber, itemCount), tagNames);
     }

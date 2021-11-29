@@ -15,7 +15,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -26,11 +25,6 @@ import javax.crypto.SecretKey;
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Bean
-    public UserDetailsService userDetailsService() {
-        return new UserDetailsServiceImpl();
-    }
-
-    @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
@@ -39,11 +33,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private JwtConfiguration jwtConfiguration;
 
+    private UserDetailsServiceImpl userDetailsService;
+
     @Autowired
     public SecurityConfiguration(SecretKey secretKey,
-                                 JwtConfiguration jwtConfiguration) {
+                                 JwtConfiguration jwtConfiguration, UserDetailsServiceImpl userDetailsService) {
         this.secretKey = secretKey;
         this.jwtConfiguration = jwtConfiguration;
+        this.userDetailsService = userDetailsService;
     }
 
     @Override
@@ -60,8 +57,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                         JwtUsernameAndPasswordAuthenticationFilter.class)
                 .authorizeRequests()
                 .antMatchers(HttpMethod.GET, "/gift-certificates/**").permitAll()
-                .antMatchers(HttpMethod.POST, "/gift-certificates/orders/**").hasAnyRole(
-                        User.Role.ADMINISTRATOR.name(), User.Role.USER.name())
+                .antMatchers(HttpMethod.POST, "/orders/**").hasAnyRole(User.Role.USER.name())
                 .antMatchers("/").hasRole(User.Role.ADMINISTRATOR.name())
                 .antMatchers(HttpMethod.GET).hasRole(User.Role.USER.name())
                 .antMatchers(HttpMethod.POST, "/users").permitAll()
@@ -76,7 +72,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService());
+        authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }

@@ -3,9 +3,8 @@ package com.epam.esm.service;
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.entity.dto.SortDataDto;
-import com.epam.esm.service.exception.DataNotFoundException;
+import com.epam.esm.service.exception.ForbiddenRequestException;
 import com.epam.esm.service.exception.IllegalPageNumberException;
-import com.epam.esm.service.exception.ParameterNotPresentException;
 
 import java.util.List;
 
@@ -17,24 +16,13 @@ import java.util.List;
 public interface GiftCertificateService extends BaseService<GiftCertificate> {
 
     /**
-     * Method that binds certificate and user.
-     *
-     * @param certificateId - certificate identifier for binding
-     * @param userId        - user identifier for binding
-     * @return boolean result of binding
-     * @throws {@link ParameterNotPresentException}
-     * @throws {@link DataNotFoundException} when some of entities do not exist
-     */
-    boolean addCertificateToUser(Long certificateId, Long userId)
-            throws ParameterNotPresentException, DataNotFoundException;
-
-    /**
      * Method for seeking {@link GiftCertificate}s by part of {@link Tag} name.
      *
      * @param tagName - target certificate identifier
      * @return list of {@link GiftCertificate} matching search condition
+     * @throws {@link ForbiddenRequestException} when user should not see this data
      */
-    List<GiftCertificate> findAllByTagName(String tagName);
+    List<GiftCertificate> findAllByTagName(String tagName) throws ForbiddenRequestException;
 
     /**
      * Method for seeking {@link GiftCertificate}s by part of its name and description.
@@ -67,8 +55,9 @@ public interface GiftCertificateService extends BaseService<GiftCertificate> {
      * @param tagNames  - tag names for search
      * @return list of {@link GiftCertificate}
      * @throws {@link IllegalPageNumberException} when page number is invalid
+     * @throws {@link ForbiddenRequestException} when user should not see this data
      */
     List<GiftCertificate> findAllByTagNames(Integer page, Integer itemCount, String... tagNames)
-            throws IllegalPageNumberException;
+            throws IllegalPageNumberException, ForbiddenRequestException;
 
 }
