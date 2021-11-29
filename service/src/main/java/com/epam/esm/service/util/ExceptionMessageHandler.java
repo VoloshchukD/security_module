@@ -31,6 +31,10 @@ public class ExceptionMessageHandler {
 
     public static final String INVALID_PAGE_MESSAGE_NAME = "message.invalid-page";
 
+    public static final String FORBIDDEN_REQUEST_MESSAGE_NAME = "request.forbidden";
+
+    public static final String STRANGE_TOKEN_MESSAGE_NAME = "request.strange-token";
+
     public static final String SOURCE_NAME = "local";
 
     public static String getMessageForLocale(String messageKey, Locale locale) {

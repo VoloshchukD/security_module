@@ -3,6 +3,7 @@ package com.epam.esm.service;
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.service.exception.DataNotFoundException;
+import com.epam.esm.service.exception.ForbiddenRequestException;
 import com.epam.esm.service.exception.ParameterNotPresentException;
 
 /**
@@ -33,7 +34,8 @@ public interface TagService extends BaseService<Tag> {
      * @throws {@link ParameterNotPresentException}
      * @throws {@link DataNotFoundException}
      */
-    boolean addTagToCertificate(Tag tag, Long certificateId) throws ParameterNotPresentException, DataNotFoundException;
+    boolean addTagToCertificate(Tag tag, Long certificateId)
+            throws ParameterNotPresentException, DataNotFoundException;
 
     /**
      * Method with logics for seeking most frequently used {@link Tag} of user with highest cost of order.
@@ -41,8 +43,9 @@ public interface TagService extends BaseService<Tag> {
      * @param userId - user identifier for search
      * @return {@link Tag} that match search condition
      * @throws {@link ParameterNotPresentException}
+     * @throws {@link ForbiddenRequestException} when user should not see this data
      */
-    Tag findPopularTag(Long userId) throws ParameterNotPresentException;
+    Tag findPopularTag(Long userId) throws ParameterNotPresentException, ForbiddenRequestException;
 
     /**
      * Method with unbinding logics for {@link Tag} and {@link GiftCertificate} data.

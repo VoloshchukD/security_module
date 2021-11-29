@@ -1,7 +1,6 @@
 package com.epam.esm.service.impl;
 
-import com.epam.esm.dao.UserDao;
-import com.epam.esm.entity.Order;
+import com.epam.esm.dao.UserRepository;
 import com.epam.esm.entity.User;
 import com.epam.esm.service.UserService;
 import com.epam.esm.service.exception.DataNotFoundException;
@@ -9,22 +8,33 @@ import com.epam.esm.service.exception.IllegalPageNumberException;
 import com.epam.esm.service.exception.ParameterNotPresentException;
 import com.epam.esm.service.util.ExceptionMessageHandler;
 import com.epam.esm.service.util.PaginationLogics;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
 
-    private UserDao userDao;
+    private UserRepository userRepository;
 
-    public UserServiceImpl(UserDao userDao) {
-        this.userDao = userDao;
+    private PasswordEncoder encoder;
+
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder encoder) {
+        this.userRepository = userRepository;
+        this.encoder = encoder;
     }
 
     @Override
     public boolean add(User user) {
-        throw new UnsupportedOperationException();
+        if (user.getRole() == User.Role.ADMINISTRATOR) {
+            return false;
+        }
+        String encodedPassword = encoder.encode(user.getPassword());
+        user.setPassword(encodedPassword);
+        return userRepository.save(user) != null;
     }
 
     @Override
@@ -33,50 +43,38 @@ public class UserServiceImpl implements UserService {
             throw new ParameterNotPresentException(ExceptionMessageHandler.USER_CODE,
                     ExceptionMessageHandler.USER_ID_NOT_PRESENT_MESSAGE_NAME);
         }
-        User user = userDao.find(id);
-        if (user == null) {
-            throw new DataNotFoundException(ExceptionMessageHandler.USER_CODE,
-                    ExceptionMessageHandler.USER_NOT_FOUND_MESSAGE_NAME);
-        }
-        return user;
+        Optional<User> user = userRepository.findById(id);
+        return user.orElseThrow(() -> new DataNotFoundException(ExceptionMessageHandler.USER_CODE,
+                ExceptionMessageHandler.USER_NOT_FOUND_MESSAGE_NAME));
     }
 
     @Override
     public List<User> findAll(Integer page, Integer itemCount) throws IllegalPageNumberException {
-        return userDao.findAll(itemCount, PaginationLogics.convertToOffset(page, itemCount));
+        int convertedPageNumber = PaginationLogics.convertPage(page, itemCount);
+        return userRepository.findAll(PageRequest.of(convertedPageNumber, itemCount)).getContent();
     }
 
     @Override
-    public User update(User user) {
-        throw new UnsupportedOperationException();
+    public User update(User user) throws ParameterNotPresentException, DataNotFoundException {
+        User forUpdate = find(user.getId());
+        setUpdateData(user, forUpdate);
+        return userRepository.save(forUpdate);
     }
 
-    @Override
-    public boolean delete(Long id) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Order findUserOrder(Long orderId, Long userId) throws ParameterNotPresentException {
-        if (orderId == null) {
-            throw new ParameterNotPresentException(ExceptionMessageHandler.ORDER_CODE,
-                    ExceptionMessageHandler.ORDER_ID_NOT_PRESENT_MESSAGE_NAME);
+    private void setUpdateData(User data, User target) {
+        if (data.getForename() != null) {
+            target.setForename(data.getForename());
         }
-        if (userId == null) {
-            throw new ParameterNotPresentException(ExceptionMessageHandler.USER_CODE,
-                    ExceptionMessageHandler.USER_ID_NOT_PRESENT_MESSAGE_NAME);
+        if (data.getSurname() != null) {
+            target.setSurname(data.getSurname());
         }
-        return userDao.findUserOrder(orderId, userId);
     }
 
     @Override
-    public List<Order> findUserOrders(Long userId, Integer page, Integer itemCount)
-            throws ParameterNotPresentException, IllegalPageNumberException {
-        if (userId == null) {
-            throw new ParameterNotPresentException(ExceptionMessageHandler.USER_CODE,
-                    ExceptionMessageHandler.USER_ID_NOT_PRESENT_MESSAGE_NAME);
-        }
-        return userDao.findUserOrders(userId, itemCount, PaginationLogics.convertToOffset(page, itemCount));
+    public boolean delete(Long id) throws ParameterNotPresentException, DataNotFoundException {
+        User user = find(id);
+        userRepository.delete(user);
+        return true;
     }
 
 }

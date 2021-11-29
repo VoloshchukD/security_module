@@ -12,26 +12,11 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 public class UserDaoTest {
 
     @Autowired
-    private UserDao userDao;
+    private UserRepository userRepository;
 
     @Test
-    public void testFindUser() {
-        Assertions.assertNotNull(userDao.find(1L));
-    }
-
-    @Test
-    public void testFindAllUsers() {
-        Assertions.assertNotNull(userDao.findAll(3, 0));
-    }
-
-    @Test
-    public void testFindUserOrder() {
-        Assertions.assertNotNull(userDao.findUserOrder(1L, 1L));
-    }
-
-    @Test
-    public void testFindUserOrders() {
-        Assertions.assertNotNull(userDao.findUserOrders(1L, 3, 0));
+    public void testFindByUsername() {
+        Assertions.assertNotNull(userRepository.findByUsername("Bob"));
     }
 
 }

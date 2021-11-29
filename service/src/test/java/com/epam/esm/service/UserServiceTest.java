@@ -1,7 +1,6 @@
 package com.epam.esm.service;
 
-import com.epam.esm.dao.UserDao;
-import com.epam.esm.dao.impl.UserDaoImpl;
+import com.epam.esm.dao.UserRepository;
 import com.epam.esm.entity.Order;
 import com.epam.esm.entity.User;
 import com.epam.esm.service.exception.DataNotFoundException;
@@ -13,14 +12,21 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Collections;
+import java.util.Optional;
 
 public class UserServiceTest {
 
     private UserService userService;
 
-    private UserDao userDao;
+    private UserRepository userRepository;
+
+    private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     private static User user;
 
@@ -37,32 +43,21 @@ public class UserServiceTest {
 
     @BeforeEach
     public void setUpMocks() {
-        userDao = Mockito.mock(UserDaoImpl.class);
-        userService = new UserServiceImpl(userDao);
+        userRepository = Mockito.mock(UserRepository.class);
+        userService = new UserServiceImpl(userRepository, passwordEncoder);
     }
 
     @Test
     public void testFindUser() throws ParameterNotPresentException, DataNotFoundException {
-        Mockito.when(userDao.find(user.getId())).thenReturn(user);
+        Mockito.when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
         Assertions.assertEquals(user, userService.find(user.getId()));
     }
 
     @Test
     public void testFindAllUser() throws IllegalPageNumberException {
-        Mockito.when(userDao.findAll(5, 0)).thenReturn(Collections.singletonList(user));
-        Assertions.assertNotNull(userService.findAll(1, 5));
-    }
-
-    @Test
-    public void testFindUserOrder() throws ParameterNotPresentException {
-        Mockito.when(userDao.findUserOrder(1L, 1L)).thenReturn(order);
-        Assertions.assertNotNull(userService.findUserOrder(1L, 1L));
-    }
-
-    @Test
-    public void testFindUserOrders() throws ParameterNotPresentException, IllegalPageNumberException {
-        Mockito.when(userDao.findUserOrders(1L, 5, 0)).thenReturn(Collections.singletonList(order));
-        Assertions.assertNotNull(userService.findUserOrders(1L, 1, 5));
+        Mockito.when(userRepository.findAll(PageRequest.of(0, 1)))
+                .thenReturn(new PageImpl<>(Collections.singletonList(user)));
+        Assertions.assertNotNull(userService.findAll(1, 1));
     }
 
 }

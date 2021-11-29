@@ -2,6 +2,8 @@ package com.epam.esm.dao;
 
 import com.epam.esm.dao.configuration.TestDataSourceConfiguration;
 import com.epam.esm.entity.GiftCertificate;
+import com.epam.esm.entity.Order;
+import com.epam.esm.entity.User;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -14,40 +16,37 @@ import java.util.Date;
 
 @Sql(scripts = "/data.sql")
 @SpringJUnitConfig(TestDataSourceConfiguration.class)
-public class GiftCertificateDaoTest {
+public class OrderRepositoryTest {
 
     @Autowired
-    private GiftCertificateRepository certificateRepository;
+    private OrderRepository orderRepository;
 
-    private static GiftCertificate giftCertificate;
+    private static Order order;
 
     @BeforeAll
     public static void initializeGiftCertificate() {
-        giftCertificate = new GiftCertificate();
+        GiftCertificate giftCertificate = new GiftCertificate();
         giftCertificate.setName("qwerty");
         giftCertificate.setLastUpdateDate(new Date());
         giftCertificate.setCreateDate(new Date());
         giftCertificate.setDescription("test");
         giftCertificate.setDuration(1);
         giftCertificate.setPrice(1);
+        order = new Order();
+        order.setCertificate(giftCertificate);
+        User user = new User();
+        user.setId(1L);
+        order.setUser(user);
     }
 
     @Test
-    public void testFindByNameAndDescription() {
-        Assertions.assertNotNull(
-                certificateRepository.findGiftCertificatesByNameAndDescription("qwer", "qwer",
-                        PageRequest.of(0, 1)));
+    public void testFindAllByUserId() {
+        Assertions.assertNotNull(orderRepository.findAllByUser_Id(1L, PageRequest.of(0, 1)));
     }
 
     @Test
-    public void testFindAllByTagName() {
-        Assertions.assertNotNull(certificateRepository.findAllByTagName("name"));
-    }
-
-    @Test
-    public void testFindAllByTagNames() {
-        Assertions.assertNotNull(certificateRepository.findAllByTagNames(
-                PageRequest.of(0, 1), "Tom", "Bob"));
+    public void testFindByIdAndUserId() {
+        Assertions.assertNotNull(orderRepository.findByIdAndUser_Id(1L, 1L));
     }
 
 }

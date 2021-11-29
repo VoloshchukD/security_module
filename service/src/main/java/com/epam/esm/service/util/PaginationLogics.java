@@ -8,7 +8,7 @@ public class PaginationLogics {
 
     public static final Integer DEFAULT_PAGE = 1;
 
-    public static Integer convertToOffset(Integer pageNumber, Integer itemCount) throws IllegalPageNumberException {
+    public static Integer convertPage(Integer pageNumber, Integer itemCount) throws IllegalPageNumberException {
         if (pageNumber <= 0) {
             throw new IllegalPageNumberException(ExceptionMessageHandler.INVALID_PAGE_MESSAGE_NAME);
         }
@@ -18,7 +18,7 @@ public class PaginationLogics {
         if (itemCount == null) {
             itemCount = DEFAULT_LIMIT;
         }
-        return (pageNumber - 1) * itemCount;
+        return pageNumber - 1;
     }
 
 }
