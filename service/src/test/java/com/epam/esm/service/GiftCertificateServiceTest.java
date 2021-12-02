@@ -1,6 +1,5 @@
 package com.epam.esm.service;
 
-
 import com.epam.esm.dao.GiftCertificateRepository;
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.User;
@@ -10,6 +9,7 @@ import com.epam.esm.service.exception.DataNotFoundException;
 import com.epam.esm.service.exception.ForbiddenRequestException;
 import com.epam.esm.service.exception.IllegalPageNumberException;
 import com.epam.esm.service.exception.ParameterNotPresentException;
+import com.epam.esm.service.exception.UnauthorizedRequestException;
 import com.epam.esm.service.impl.GiftCertificateServiceImpl;
 import com.epam.esm.service.impl.UserDetailsServiceImpl;
 import org.junit.jupiter.api.Assertions;
@@ -17,7 +17,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -81,7 +80,7 @@ public class GiftCertificateServiceTest {
     }
 
     @Test
-    public void testFindByTagName() throws ForbiddenRequestException {
+    public void testFindByTagName() throws ForbiddenRequestException, UnauthorizedRequestException {
         String tagName = "test";
         Mockito.when(certificateRepository.findAllByTagName(tagName)).thenReturn(
                 Collections.singletonList(giftCertificate));
@@ -116,7 +115,8 @@ public class GiftCertificateServiceTest {
     }
 
     @Test
-    public void testFindCertificatesByTags() throws IllegalPageNumberException, ForbiddenRequestException {
+    public void testFindCertificatesByTags() throws IllegalPageNumberException, ForbiddenRequestException,
+            UnauthorizedRequestException {
         Mockito.when(certificateRepository.findAllByTagNames(PageRequest.of(0, 1), "John", "Bob"))
                 .thenReturn(Collections.singletonList(giftCertificate));
         Mockito.when(userDetailsService.getAuthorizedUserDetails()).thenReturn(userDetailsDto);

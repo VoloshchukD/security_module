@@ -35,6 +35,8 @@ public class ExceptionMessageHandler {
 
     public static final String STRANGE_TOKEN_MESSAGE_NAME = "request.strange-token";
 
+    public static final String UNAUTHORIZED_REQUEST_MESSAGE_NAME = "request.unauthorized";
+
     public static final String SOURCE_NAME = "local";
 
     public static String getMessageForLocale(String messageKey, Locale locale) {

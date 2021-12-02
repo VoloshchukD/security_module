@@ -57,10 +57,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                         JwtUsernameAndPasswordAuthenticationFilter.class)
                 .authorizeRequests()
                 .antMatchers(HttpMethod.GET, "/gift-certificates/**").permitAll()
-                .antMatchers(HttpMethod.POST, "/orders/**").hasAnyRole(User.Role.USER.name())
+                .antMatchers(HttpMethod.GET).hasAnyRole(User.Role.USER.name(), User.Role.ADMINISTRATOR.name())
+                .antMatchers(HttpMethod.POST, "/orders/**").hasRole(User.Role.USER.name())
                 .antMatchers("/").hasRole(User.Role.ADMINISTRATOR.name())
-                .antMatchers(HttpMethod.GET).hasRole(User.Role.USER.name())
-                .antMatchers(HttpMethod.POST, "/users").permitAll()
+                .antMatchers(HttpMethod.POST, "/users").not().hasRole(User.Role.USER.name())
                 .anyRequest().authenticated();
     }
 

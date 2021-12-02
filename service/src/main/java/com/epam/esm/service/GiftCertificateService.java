@@ -5,6 +5,7 @@ import com.epam.esm.entity.Tag;
 import com.epam.esm.entity.dto.SortDataDto;
 import com.epam.esm.service.exception.ForbiddenRequestException;
 import com.epam.esm.service.exception.IllegalPageNumberException;
+import com.epam.esm.service.exception.UnauthorizedRequestException;
 
 import java.util.List;
 
@@ -22,7 +23,8 @@ public interface GiftCertificateService extends BaseService<GiftCertificate> {
      * @return list of {@link GiftCertificate} matching search condition
      * @throws {@link ForbiddenRequestException} when user should not see this data
      */
-    List<GiftCertificate> findAllByTagName(String tagName) throws ForbiddenRequestException;
+    List<GiftCertificate> findAllByTagName(String tagName)
+            throws ForbiddenRequestException, UnauthorizedRequestException;
 
     /**
      * Method for seeking {@link GiftCertificate}s by part of its name and description.
@@ -58,6 +60,6 @@ public interface GiftCertificateService extends BaseService<GiftCertificate> {
      * @throws {@link ForbiddenRequestException} when user should not see this data
      */
     List<GiftCertificate> findAllByTagNames(Integer page, Integer itemCount, String... tagNames)
-            throws IllegalPageNumberException, ForbiddenRequestException;
+            throws IllegalPageNumberException, ForbiddenRequestException, UnauthorizedRequestException;
 
 }

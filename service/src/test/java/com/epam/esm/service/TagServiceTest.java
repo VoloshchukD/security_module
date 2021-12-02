@@ -12,6 +12,7 @@ import com.epam.esm.service.exception.DataNotFoundException;
 import com.epam.esm.service.exception.ForbiddenRequestException;
 import com.epam.esm.service.exception.IllegalPageNumberException;
 import com.epam.esm.service.exception.ParameterNotPresentException;
+import com.epam.esm.service.exception.UnauthorizedRequestException;
 import com.epam.esm.service.impl.GiftCertificateServiceImpl;
 import com.epam.esm.service.impl.TagServiceImpl;
 import com.epam.esm.service.impl.UserDetailsServiceImpl;
@@ -100,7 +101,7 @@ public class TagServiceTest {
     }
 
     @Test
-    public void testFindPopularTag() throws ParameterNotPresentException, ForbiddenRequestException {
+    public void testFindPopularTag() throws ParameterNotPresentException, ForbiddenRequestException, UnauthorizedRequestException {
         User user = new User();
         user.setId(1L);
         user.setRole(User.Role.ADMINISTRATOR);

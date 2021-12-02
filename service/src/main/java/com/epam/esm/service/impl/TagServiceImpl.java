@@ -13,6 +13,7 @@ import com.epam.esm.service.exception.DataNotFoundException;
 import com.epam.esm.service.exception.ForbiddenRequestException;
 import com.epam.esm.service.exception.IllegalPageNumberException;
 import com.epam.esm.service.exception.ParameterNotPresentException;
+import com.epam.esm.service.exception.UnauthorizedRequestException;
 import com.epam.esm.service.util.ExceptionMessageHandler;
 import com.epam.esm.service.util.PaginationLogics;
 import org.springframework.data.domain.PageRequest;
@@ -65,7 +66,8 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public Tag findPopularTag(Long userId) throws ParameterNotPresentException, ForbiddenRequestException {
+    public Tag findPopularTag(Long userId) throws ParameterNotPresentException, ForbiddenRequestException,
+            UnauthorizedRequestException {
         if (userId == null) {
             throw new ParameterNotPresentException(ExceptionMessageHandler.USER_CODE,
                     ExceptionMessageHandler.USER_ID_NOT_PRESENT_MESSAGE_NAME);

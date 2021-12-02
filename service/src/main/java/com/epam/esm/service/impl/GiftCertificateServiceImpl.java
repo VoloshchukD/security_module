@@ -10,6 +10,7 @@ import com.epam.esm.service.exception.DataNotFoundException;
 import com.epam.esm.service.exception.ForbiddenRequestException;
 import com.epam.esm.service.exception.IllegalPageNumberException;
 import com.epam.esm.service.exception.ParameterNotPresentException;
+import com.epam.esm.service.exception.UnauthorizedRequestException;
 import com.epam.esm.service.util.ExceptionMessageHandler;
 import com.epam.esm.service.util.PaginationLogics;
 import org.springframework.data.domain.PageRequest;
@@ -85,7 +86,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public List<GiftCertificate> findAllByTagName(String tagName) throws ForbiddenRequestException {
+    public List<GiftCertificate> findAllByTagName(String tagName)
+            throws ForbiddenRequestException, UnauthorizedRequestException {
         UserDetailsDto currentUser = userDetailsService.getAuthorizedUserDetails();
         if (currentUser.getRole() != User.Role.ADMINISTRATOR) {
             throw new ForbiddenRequestException(ExceptionMessageHandler.CERTIFICATE_CODE,
@@ -96,7 +98,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public List<GiftCertificate> findAllByTagNames(Integer page, Integer itemCount, String... tagNames)
-            throws IllegalPageNumberException, ForbiddenRequestException {
+            throws IllegalPageNumberException, ForbiddenRequestException, UnauthorizedRequestException {
         UserDetailsDto currentUser = userDetailsService.getAuthorizedUserDetails();
         if (currentUser.getRole() != User.Role.ADMINISTRATOR) {
             throw new ForbiddenRequestException(ExceptionMessageHandler.CERTIFICATE_CODE,

@@ -12,6 +12,7 @@ import com.epam.esm.service.exception.DataNotFoundException;
 import com.epam.esm.service.exception.ForbiddenRequestException;
 import com.epam.esm.service.exception.IllegalPageNumberException;
 import com.epam.esm.service.exception.ParameterNotPresentException;
+import com.epam.esm.service.exception.UnauthorizedRequestException;
 import com.epam.esm.service.util.ExceptionMessageHandler;
 import com.epam.esm.service.util.PaginationLogics;
 import org.springframework.data.domain.PageRequest;
@@ -40,7 +41,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public boolean addCertificateToUser(Long certificateId, Long userId)
-            throws ParameterNotPresentException, DataNotFoundException, ForbiddenRequestException {
+            throws ParameterNotPresentException, DataNotFoundException, ForbiddenRequestException, UnauthorizedRequestException {
         UserDetailsDto currentUser = userDetailsService.getAuthorizedUserDetails();
         if (currentUser.getRole() == User.Role.USER && !currentUser.getId().equals(userId)) {
             throw new ForbiddenRequestException(ExceptionMessageHandler.ORDER_CODE,

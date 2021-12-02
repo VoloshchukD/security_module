@@ -7,6 +7,7 @@ import com.epam.esm.service.exception.DataNotFoundException;
 import com.epam.esm.service.exception.ForbiddenRequestException;
 import com.epam.esm.service.exception.IllegalPageNumberException;
 import com.epam.esm.service.exception.ParameterNotPresentException;
+import com.epam.esm.service.exception.UnauthorizedRequestException;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -106,7 +107,7 @@ public class TagController {
     @GetMapping(value = "/popular", params = {"user-id"})
     @ResponseStatus(HttpStatus.OK)
     public EntityModel<Tag> findPopularTag(@RequestParam("user-id") Long userId)
-            throws ParameterNotPresentException, ForbiddenRequestException {
+            throws ParameterNotPresentException, ForbiddenRequestException, UnauthorizedRequestException {
         return tagModelAssembler.toModel(tagService.findPopularTag(userId));
     }
 

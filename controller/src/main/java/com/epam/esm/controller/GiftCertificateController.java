@@ -8,6 +8,7 @@ import com.epam.esm.service.exception.DataNotFoundException;
 import com.epam.esm.service.exception.ForbiddenRequestException;
 import com.epam.esm.service.exception.IllegalPageNumberException;
 import com.epam.esm.service.exception.ParameterNotPresentException;
+import com.epam.esm.service.exception.UnauthorizedRequestException;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -81,7 +82,7 @@ public class GiftCertificateController {
     @GetMapping(params = {"tag-name"})
     @ResponseStatus(HttpStatus.OK)
     public List<EntityModel<GiftCertificate>> findGiftCertificateByTagName(@RequestParam("tag-name") String tagName)
-            throws ForbiddenRequestException {
+            throws ForbiddenRequestException, UnauthorizedRequestException {
         return certificateModelAssembler.toCollectionModel(giftCertificateService.findAllByTagName(tagName));
     }
 
@@ -90,7 +91,7 @@ public class GiftCertificateController {
     public List<EntityModel<GiftCertificate>> findCertificatesByTags(@RequestParam("tag-names") List<String> tagNames,
                                                                      @RequestParam("page") Integer page,
                                                                      @RequestParam("item-count") Integer itemCount)
-            throws IllegalPageNumberException, ForbiddenRequestException {
+            throws IllegalPageNumberException, ForbiddenRequestException, UnauthorizedRequestException {
         String[] tagNamesArray = new String[tagNames.size()];
         List<GiftCertificate> certificates
                 = giftCertificateService.findAllByTagNames(page, itemCount, tagNames.toArray(tagNamesArray));

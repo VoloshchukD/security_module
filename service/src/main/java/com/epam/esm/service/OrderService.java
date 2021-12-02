@@ -5,6 +5,7 @@ import com.epam.esm.service.exception.DataNotFoundException;
 import com.epam.esm.service.exception.ForbiddenRequestException;
 import com.epam.esm.service.exception.IllegalPageNumberException;
 import com.epam.esm.service.exception.ParameterNotPresentException;
+import com.epam.esm.service.exception.UnauthorizedRequestException;
 
 import java.util.List;
 
@@ -21,7 +22,8 @@ public interface OrderService extends BaseService<Order> {
      * @throws {@link ForbiddenRequestException} when user should not see this data
      */
     boolean addCertificateToUser(Long certificateId, Long userId)
-            throws ParameterNotPresentException, DataNotFoundException, ForbiddenRequestException;
+            throws ParameterNotPresentException, DataNotFoundException,
+            ForbiddenRequestException, UnauthorizedRequestException;
 
     /**
      * Method with user order seeking logics.

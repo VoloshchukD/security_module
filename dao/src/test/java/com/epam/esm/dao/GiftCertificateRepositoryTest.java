@@ -14,7 +14,7 @@ import java.util.Date;
 
 @Sql(scripts = "/data.sql")
 @SpringJUnitConfig(TestDataSourceConfiguration.class)
-public class GiftCertificateDaoTest {
+public class GiftCertificateRepositoryTest {
 
     @Autowired
     private GiftCertificateRepository certificateRepository;
@@ -35,8 +35,8 @@ public class GiftCertificateDaoTest {
     @Test
     public void testFindByNameAndDescription() {
         Assertions.assertNotNull(
-                certificateRepository.findGiftCertificatesByNameAndDescription("qwer", "qwer",
-                        PageRequest.of(0, 1)));
+                certificateRepository.findGiftCertificatesByNameAndDescription(
+                        "qwer", "qwer", PageRequest.of(0, 1)));
     }
 
     @Test

@@ -6,6 +6,7 @@ import com.epam.esm.service.exception.ForbiddenRequestException;
 import com.epam.esm.service.exception.IllegalPageNumberException;
 import com.epam.esm.service.exception.ParameterNotPresentException;
 import com.epam.esm.service.exception.ServiceException;
+import com.epam.esm.service.exception.UnauthorizedRequestException;
 import com.epam.esm.service.util.ExceptionMessageHandler;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
@@ -34,7 +35,7 @@ public class ControllerExceptionHandler {
 
     @ExceptionHandler(ForbiddenRequestException.class)
     protected ResponseEntity<Object> handleForbiddenRequestException(ForbiddenRequestException exception,
-                                                                 WebRequest request) {
+                                                                     WebRequest request) {
         HttpStatus status = HttpStatus.FORBIDDEN;
         return handleException(exception, request, status);
     }
@@ -43,6 +44,17 @@ public class ControllerExceptionHandler {
     protected ResponseEntity<Object> handleDataNotFoundException(IllegalPageNumberException exception,
                                                                  WebRequest request) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
+        String messageName = ExceptionMessageHandler.getMessageForLocale(exception.getMessage(),
+                request.getLocale());
+        log.error(messageName, exception);
+        ErrorData errorData = new ErrorData(messageName, String.valueOf(status.value()));
+        return new ResponseEntity<>(errorData, status);
+    }
+
+    @ExceptionHandler(UnauthorizedRequestException.class)
+    protected ResponseEntity<Object> handleDataNotFoundException(UnauthorizedRequestException exception,
+                                                                 WebRequest request) {
+        HttpStatus status = HttpStatus.UNAUTHORIZED;
         String messageName = ExceptionMessageHandler.getMessageForLocale(exception.getMessage(),
                 request.getLocale());
         log.error(messageName, exception);

@@ -7,6 +7,7 @@ import com.epam.esm.service.exception.DataNotFoundException;
 import com.epam.esm.service.exception.ForbiddenRequestException;
 import com.epam.esm.service.exception.IllegalPageNumberException;
 import com.epam.esm.service.exception.ParameterNotPresentException;
+import com.epam.esm.service.exception.UnauthorizedRequestException;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +37,8 @@ public class OrderController {
     @PostMapping(params = {"certificate-id", "user-id"})
     public ResponseEntity<Boolean> addCertificateToUser(@RequestParam("certificate-id") Long certificateId,
                                                         @RequestParam("user-id") Long userId)
-            throws ParameterNotPresentException, DataNotFoundException, ForbiddenRequestException {
+            throws ParameterNotPresentException, DataNotFoundException, ForbiddenRequestException,
+            UnauthorizedRequestException {
         boolean result = orderService.addCertificateToUser(certificateId, userId);
         HttpStatus httpStatus = result ? HttpStatus.CREATED : HttpStatus.NOT_MODIFIED;
         return new ResponseEntity<>(result, httpStatus);

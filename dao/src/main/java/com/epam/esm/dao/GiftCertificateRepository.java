@@ -13,8 +13,7 @@ import java.util.List;
 @Repository
 public interface GiftCertificateRepository extends JpaRepository<GiftCertificate, Long> {
 
-    List<GiftCertificate> findGiftCertificatesByNameAndDescription(String name, String description,
-                                                                   PageRequest pageRequest);
+    List<GiftCertificate> findGiftCertificatesByNameAndDescription(String name, String description, Pageable pageable);
 
     @Query("SELECT g FROM GiftCertificate g JOIN g.tags t WHERE t.name = :tagName")
     List<GiftCertificate> findAllByTagName(@Param("tagName") String tagName);

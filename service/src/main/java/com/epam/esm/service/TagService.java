@@ -5,6 +5,7 @@ import com.epam.esm.entity.Tag;
 import com.epam.esm.service.exception.DataNotFoundException;
 import com.epam.esm.service.exception.ForbiddenRequestException;
 import com.epam.esm.service.exception.ParameterNotPresentException;
+import com.epam.esm.service.exception.UnauthorizedRequestException;
 
 /**
  * Base interface with logics specific for {@link Tag}.
@@ -45,7 +46,8 @@ public interface TagService extends BaseService<Tag> {
      * @throws {@link ParameterNotPresentException}
      * @throws {@link ForbiddenRequestException} when user should not see this data
      */
-    Tag findPopularTag(Long userId) throws ParameterNotPresentException, ForbiddenRequestException;
+    Tag findPopularTag(Long userId) throws ParameterNotPresentException, ForbiddenRequestException,
+            UnauthorizedRequestException;
 
     /**
      * Method with unbinding logics for {@link Tag} and {@link GiftCertificate} data.
